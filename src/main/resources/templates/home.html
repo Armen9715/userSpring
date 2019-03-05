@@ -5,9 +5,25 @@
     <title>Title</title>
 </head>
 <body>
-<form action="/user/add" method="post">
-    <input type="text" name="name" placeholder="input name"/> <br>
-    <input type="text" name="surname" placeholder="input surname"/> <br>
-    <input type="submit" value="add">
-</form></body>
+Users: <a href="/user/add">Add User</a> <br>
+<table border="1">
+    <tr>
+        <td>picture</td>
+        <td>Id</td>
+        <td>Name</td>
+        <td>Surname</td>
+        <td>Email</td>
+        <td>Action</td>
+    </tr>
+    <tr th:each="u: ${users}">
+        <td><a th:if="${u.picUrl != null}" target="_blank" th:href="@{/getImage(picUrl=${u.picUrl})}"><img th:src="@{/getImage(picUrl=${u.picUrl})}"
+                                                                                                           width="100"/></a></td>
+        <td th:text="${u.id}"></td>
+        <td th:text="${u.name}"></td>
+        <td th:text="${u.surname}"></td>
+        <td th:text="${u.email}"></td>
+        <td><a th:href="@{/user/delete(id=${u.id})}">delete</a></td>
+    </tr>
+</table>
+</body>
 </html>

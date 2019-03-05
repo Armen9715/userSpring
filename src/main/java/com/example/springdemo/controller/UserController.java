@@ -2,23 +2,54 @@ package com.example.springdemo.controller;
 
 import com.example.springdemo.model.User;
 import com.example.springdemo.repository.UserRepository;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 @Controller
-@RequestMapping("/user")
 public class UserController {
-    @Autowired
-    UserRepository userRepository;
 
-    @PostMapping("/add")
-    public String add(@RequestParam("name") String name, @RequestParam("surname") String surname) {
-        User user = User.builder().name(name).surname(surname).build();
-        userRepository.save(user);
-        System.out.println(user);
+    @Autowired
+    private UserRepository userRepository;
+
+    @GetMapping("/user/delete")
+    public String deleteUser(@RequestParam("id") int id) {
+        userRepository.deleteById(id);
         return "redirect:/home";
     }
+
+    @GetMapping("/user/add")
+    public String addUserGet() {
+        return "addUser";
+    }
+
+    @PostMapping("/user/add")
+    public String addUser(@ModelAttribute User user, @RequestParam("picture") MultipartFile multipartFile) throws IOException {
+        String name = System.currentTimeMillis() + "_" + multipartFile.getOriginalFilename();
+        File file = new File("C:\\Users\\Hambardzumyan\\IdeaProjects\\userSpring\\avatars\\"+ name);
+        multipartFile.transferTo(file);
+        user.setPicUrl(name);
+        userRepository.save(user);
+        return "redirect:/home";
+    }
+
+    @GetMapping("/getImage")
+    public void getImageAsByteArray(HttpServletResponse response, @RequestParam("picUrl") String picUrl) throws IOException {
+        InputStream in = new FileInputStream("C:\\Users\\Hambardzumyan\\IdeaProjects\\userSpring\\avatars\\"+picUrl);
+        response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+        IOUtils.copy(in, response.getOutputStream());
+    }
+
 }
