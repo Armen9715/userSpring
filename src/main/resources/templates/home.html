@@ -5,6 +5,9 @@
     <title>Title</title>
 </head>
 <body>
-i`m homee <span th:each="n :${name}" th:text="${n} + ' ' "> </span>
-</body>
+<form action="/user/add" method="post">
+    <input type="text" name="name" placeholder="input name"/> <br>
+    <input type="text" name="surname" placeholder="input surname"/> <br>
+    <input type="submit" value="add">
+</form></body>
 </html>
